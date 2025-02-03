@@ -3,6 +3,7 @@
     "lib": ["DOM", "DOM.Iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true
+    "strict": true,
+    "jsx": "react-jsx"
   }
 }
