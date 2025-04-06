@@ -1,0 +1,94 @@
+---
+sidebar_position: 1
+---
+
+# useWebNotification
+
+웹 브라우저의 알림 API를 사용하여 사용자에게 알림을 표시하는 훅입니다. 알림 권한 요청, 알림 표시, 알림 관리 등의 기능을 제공합니다.
+
+## 기능
+
+- 브라우저 알림 API 지원 여부 확인
+- 알림 권한 요청 및 상태 관리
+- 알림 표시 및 관리 (닫기, 모두 닫기)
+
+## 사용법
+
+```tsx
+import { useWebNotification } from '@kimcookieya/use-react';
+
+function NotificationExample() {
+  const {
+    isSupported,
+    show,
+    close,
+    closeAll,
+    ensurePermissions,
+    permission,
+    permissionGranted,
+  } = useWebNotification();
+
+  const handleShowNotification = async () => {
+    // 권한이 없으면 요청
+    if (!permissionGranted) {
+      const granted = await ensurePermissions();
+      if (!granted) {
+        alert('알림 권한이 필요합니다.');
+        return;
+      }
+    }
+
+    // 알림 표시
+    show('새 메시지가 도착했습니다.', {
+      body: '홍길동님으로부터 새 메시지가 도착했습니다.',
+      icon: '/icon.png',
+    });
+  };
+
+  if (!isSupported) {
+    return <p>이 브라우저는 웹 알림을 지원하지 않습니다.</p>;
+  }
+
+  return (
+    <div>
+      <p>현재 알림 권한 상태: {permission}</p>
+      <button onClick={handleShowNotification}>알림 표시</button>
+      <button onClick={closeAll}>모든 알림 닫기</button>
+    </div>
+  );
+}
+```
+
+## 매개변수
+
+- **autoRequest** `boolean` (기본값: `true`)
+  - true로 설정하면 훅이 마운트될 때 자동으로 알림 권한을 요청합니다.
+
+## 반환값
+
+- **isSupported** `boolean`
+  - 브라우저가 Notification API를 지원하는지 여부
+
+- **show** `(title: string, options?: NotificationOptions) => Notification | undefined`
+  - 알림을 표시하는 함수
+
+- **close** `(notification?: Notification) => void`
+  - 특정 알림을 닫는 함수
+
+- **closeAll** `() => void`
+  - 모든 알림을 닫는 함수
+
+- **ensurePermissions** `() => Promise<boolean | undefined>`
+  - 알림 권한을 요청하는 함수
+
+- **permission** `NotificationPermission`
+  - 현재 알림 권한 상태 ('default', 'granted', 'denied')
+
+- **permissionGranted** `boolean`
+  - 알림 권한이 허용되었는지 여부
+
+## 주의사항
+
+- 웹 알림은 보안 컨텍스트(HTTPS)에서만 작동합니다.
+- 모바일 브라우저에서는 지원이 제한적일 수 있습니다.
+- 사용자가 알림 권한을 거부한 경우, 브라우저 설정에서 수동으로 변경해야 합니다. 
