@@ -115,9 +115,9 @@ export function useWebNotification(
 
   // 모든 알림을 닫는 함수
   const closeAll = useCallback(() => {
-    notificationsRef.current.forEach((notification) => {
+    for (const notification of notificationsRef.current) {
       notification.close();
-    });
+    }
     notificationsRef.current.clear();
   }, []);
 
