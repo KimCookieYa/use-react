@@ -1,30 +1,31 @@
-import Query from "./Query";
 import QueryCache from "./QueryCache";
 
 export interface QueryClientOptions<T = any> {
-  queries: Query<T>[];
-  defaultOptions: QueryOptions<T>;
+  queries?: {
+    staleTime?: number;
+    gcTime?: number;
+  }
 }
 
 export interface QueryOptions<T = any> {
   queryKey: QueryKey;
-  queryHash: string;
+  queryHash?: string;
   queryFn: () => Promise<T>;
-  staleTime: number;
-  gcTime: number;
+  staleTime?: number;
+  gcTime?: number;
 }
 
 export interface QueryClientConfig<T = any> {
   cache?: QueryCache;
-  defaultOptions: QueryClientOptions<T>;
+  defaultClientOptions: QueryClientOptions<T>;
 }
 
 export interface QueryConfig<T = any> {
-  cache: QueryCache;
+  cache: QueryCache<T>;
   queryKey: QueryKey;
   queryHash: string;
   options: QueryOptions<T>;
-  defaultOptions: QueryClientOptions<T>;
+  defaultClientOptions: QueryClientOptions<T>;
 }
 
 export type QueryKey = string;

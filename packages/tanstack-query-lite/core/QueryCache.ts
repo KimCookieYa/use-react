@@ -25,8 +25,8 @@ class QueryCache<T = any> {
         cache: this,
         queryKey,
         queryHash,
-        options: client.createDefaultQueryOptions(options),
-        defaultOptions: client.defaultOptions
+        options: client.createQueryOptions(options),
+        defaultClientOptions: client.defaultClientOptions
       });
 
       this.queries.set(query.queryHash, query);

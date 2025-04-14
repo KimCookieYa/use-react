@@ -18,7 +18,7 @@ class Query<T = any> {
     this.queryHash = config.queryHash;
     this.queryKey = config.queryKey;
     this.options = {
-      ...config.defaultOptions,
+      ...config.defaultClientOptions,
       ...config.options
     };
     this.state = {
