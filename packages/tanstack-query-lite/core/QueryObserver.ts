@@ -34,7 +34,7 @@ class QueryObserver<T = any> {
     const { lastUpdated } = query.state;
     const { staleTime } = this.options;
 
-    const needsToFetch = !lastUpdated || Date.now() - lastUpdated > staleTime;
+    const needsToFetch = !lastUpdated || Date.now() - lastUpdated > staleTime!;
 
     const unsubscribeQuery = query.subscribe(this);
 
