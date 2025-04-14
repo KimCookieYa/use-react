@@ -3,7 +3,7 @@ import { QueryClientConfig, QueryClientOptions, QueryOptions } from "./types";
 import { hashKey } from "./utils";
 
 class QueryClient<T = any> {
-  cache: QueryCache;
+  cache: QueryCache<T>;
   defaultOptions: QueryClientOptions<T>;
 
   constructor(config: QueryClientConfig) {

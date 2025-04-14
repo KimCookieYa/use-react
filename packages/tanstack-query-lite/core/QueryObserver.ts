@@ -3,12 +3,12 @@ import { QueryOptions } from "./types";
 
 const noop = () => {};
 
-class QueryObserver {
-  client: QueryClient;
-  options: QueryOptions;
+class QueryObserver<T = any> {
+  client: QueryClient<T>;
+  options: QueryOptions<T>;
   notify = noop;
 
-  constructor(client: QueryClient, options: QueryOptions) {
+  constructor(client: QueryClient<T>, options: QueryOptions<T>) {
     this.client = client;
     this.options = options;
   }
