@@ -4,7 +4,7 @@ import {QueryKey, QueryOptions} from "./types";
 import { hashKey } from "./utils";
 
 class QueryCache<T = any> {
-  queries: Map<QueryKey, Query<T>>;
+  queries: Map<string, Query<T>>;
 
   constructor() {
     this.queries = new Map();
@@ -14,9 +14,12 @@ class QueryCache<T = any> {
     return this.queries.get(queryHash);
   };
 
+  /**
+   * 주어진 QueryKey와 옵션으로 Query를 조회하거나 새로 생성합니다.
+   */
   build(client: QueryClient<T>, options: QueryOptions<T>) {
     const queryKey = options.queryKey;
-    const queryHash = hashKey(queryKey);
+    const queryHash = options.queryHash || hashKey(queryKey);
 
     let query = this.get(queryHash);
 
@@ -36,6 +39,9 @@ class QueryCache<T = any> {
     return query;
   }
 
+  /**
+   * Query 객체를 캐시에서 제거합니다.
+   */
   remove = (query: Query<T>) => {
     this.queries.delete(query.queryHash);
   };

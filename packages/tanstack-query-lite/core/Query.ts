@@ -3,7 +3,7 @@ import QueryObserver from "./QueryObserver";
 import { QueryConfig, QueryKey, QueryOptions, QueryState } from "./types";
 
 class Query<T = any> {
-  cache: QueryCache;
+  cache: QueryCache<T>;
   queryKey: QueryKey;
   queryHash: string;
   options: QueryOptions<T>;
@@ -18,14 +18,14 @@ class Query<T = any> {
     this.queryHash = config.queryHash;
     this.queryKey = config.queryKey;
     this.options = {
-      ...config.defaultClientOptions,
+      ...config.defaultClientOptions?.queries,
       ...config.options
     };
     this.state = {
       data: undefined,
       error: undefined,
       status: "pending",
-      isFetching: true,
+      isFetching: false,
       lastUpdated: undefined
     };
 
@@ -34,7 +34,7 @@ class Query<T = any> {
   }
 
   scheduleGcTimeout = () => {
-    const { gcTime } = this.options;
+    const gcTime = this.options.gcTime || 1000 * 60 * 5; // 기본값 5분
 
     this.gcTimeout = setTimeout(() => {
       this.cache.remove(this);
@@ -68,7 +68,7 @@ class Query<T = any> {
     return unsubscribe;
   };
 
-  setState = (updater: (state: QueryState) => QueryState) => {
+  setState = (updater: (state: QueryState<T>) => QueryState<T>) => {
     this.state = updater(this.state);
 
     this.observers.forEach((observer) => {
@@ -80,22 +80,24 @@ class Query<T = any> {
   fetch = () => {
     // promise 객체를 멤버 변수로 활용하여, 불필요한 요청을 방지합니다.
     if (!this.promise) {
-      (async () => {
+      this.promise = (async () => {
         this.setState((old) => ({ ...old, isFetching: true, error: undefined }));
 
         try {
           if (!this.options.queryFn) {
-            throw new Error(`Missing queryFn: '${this.options.queryHash}'`);
+            throw new Error(`Missing queryFn for query with hash: '${this.queryHash}'`);
           }
 
           const data = await this.options.queryFn();
 
           this.setState((old) => ({ ...old, status: "success", data, lastUpdated: Date.now() }));
+          
+          return data;
         } catch (error: unknown) {
           this.setState((old) => ({ ...old, status: "error", error }));
+          throw error;
         } finally {
           this.setState((old) => ({ ...old, isFetching: false }));
-
           this.promise = null;
         }
       })();

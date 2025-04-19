@@ -7,6 +7,8 @@ export interface QueryClientOptions<T = any> {
   }
 }
 
+export type QueryKey = Array<string | number | boolean | null | object>;
+
 export interface QueryOptions<T = any> {
   queryKey: QueryKey;
   queryHash?: string;
@@ -27,8 +29,6 @@ export interface QueryConfig<T = any> {
   options: QueryOptions<T>;
   defaultClientOptions: QueryClientOptions<T>;
 }
-
-export type QueryKey = string;
 
 export interface QueryState<T = any> {
   data: T | undefined;
