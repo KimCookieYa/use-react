@@ -1,13 +1,18 @@
-import { useEffect } from 'react';
+import { DependencyList, useEffect } from 'react';
 
 export default function useAsyncEffect(
-  effect: () => Promise<void>,
-  deps: React.DependencyList,
+  effect: () => Promise<void | (() => void)>,
+  deps?: DependencyList,
 ) {
   useEffect(() => {
-    const asyncEffect = async () => {
-      await effect();
+    let cleanup: (() => void) | void;
+
+    effect().then(result => {
+      cleanup = result;
+    });
+
+    return () => {
+      cleanup?.();
     };
-    asyncEffect();
   }, deps);
 }
