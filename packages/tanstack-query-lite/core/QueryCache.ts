@@ -1,17 +1,24 @@
 import Query from "./Query";
 import QueryClient from "./QueryClient";
-import {QueryKey, QueryOptions} from "./types";
+import { QueryOptions} from "./types";
 import { hashKey } from "./utils";
 
 class QueryCache<T = any> {
   queries: Map<string, Query<T>>;
+  listeners: Set<() => void>;
 
   constructor() {
     this.queries = new Map();
+    // 이벤트를 발행할 구독자들을 저장합니다.
+    this.listeners = new Set();
   }
 
   get = (queryHash: string) => {
     return this.queries.get(queryHash);
+  };
+
+  getAll = () => {
+    return Array.from(this.queries.values());
   };
 
   /**
@@ -44,6 +51,24 @@ class QueryCache<T = any> {
    */
   remove = (query: Query<T>) => {
     this.queries.delete(query.queryHash);
+  };
+
+  // 이벤트를 발행할 구독자를 추가합니다.
+  subscribe = (listener: () => void) => {
+    this.listeners.add(listener);
+
+    const unsubscribe = () => {
+      this.listeners.delete(listener);
+    };
+
+    return unsubscribe;
+  };
+
+  // 이벤트를 발행합니다.
+  notify = () => {
+    this.listeners.forEach((callback) => {
+      callback();
+    });
   };
 }
 

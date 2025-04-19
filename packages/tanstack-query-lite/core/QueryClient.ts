@@ -48,10 +48,14 @@ class QueryClient<T = any> {
       const query = this.cache.get(hashKey(queryKey));
       if (query) {
         query.state.status = "pending";
+        
+        this.cache.notify();
       }
     } else {
-      this.cache.queries.forEach((query) => {
+      this.cache.getAll().forEach((query) => {
         query.state.status = "pending";
+        
+        this.cache.notify();
       });
     }
   };

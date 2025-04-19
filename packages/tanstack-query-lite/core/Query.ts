@@ -37,6 +37,8 @@ class Query<T = any> {
     const gcTime = this.options.gcTime || 1000 * 60 * 5; // 기본값 5분
 
     this.gcTimeout = setTimeout(() => {
+      // gc 시점에 QueryCache에게 이벤트를 발행합니다
+      this.cache.notify();
       this.cache.remove(this);
     }, gcTime);
   };
@@ -74,6 +76,8 @@ class Query<T = any> {
     this.observers.forEach((observer) => {
       // 상태가 변경될 때, 구독자들에게 상태 변경 이벤트를 발행합니다.
       observer.notify();
+       // 상태 변경되면 QueryCache에게 이벤트를 발행합니다.
+    this.cache.notify();
     });
   };
 
